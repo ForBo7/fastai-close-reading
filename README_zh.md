@@ -2,7 +2,7 @@
 
 ![fastai-close-reading](thumbnail.png)
 
-对 Jeremy Howard 主讲的 [Practical Deep Learning for Coders](https://course.fast.ai) 全部课程进行**结构化精读**（更准确地说是“精看”）——包含第 1 部分和第 2 部分共 28 节课的逐课字幕与笔记。
+对 Jeremy Howard 主讲的 [Practical Deep Learning for Coders](https://course.fast.ai) _几乎_全部课程进行**结构化精读**（更准确地说是“精看”）——包含第 1 部分和第 2 部分共 28 节课的逐课字幕与笔记。
 
 不包含 [数据伦理 bonus 课 8a](https://course.fast.ai/Lessons/lesson8a.html)。欢迎你自行补充！
 
@@ -14,7 +14,7 @@
 
 ## 这是什么？
 
-本仓库包含 fast.ai《Practical Deep Learning for Coders》课程每一节课的字幕与结构化笔记，格式为 Jupyter Notebook。
+本仓库包含 fast.ai《Practical Deep Learning for Coders》课程_几乎_每一节课的字幕与结构化笔记，格式为 Jupyter Notebook。
 每节课都被拆分为多个片段，包含：
 
 - **讲解内容**：Jeremy 与团队所说、所演示的完整叙事

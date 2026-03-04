@@ -2,7 +2,7 @@
 
 ![fastai-close-reading](thumbnail.png)
 
-Structured close reading (or rather, close watching) transcripts of every lesson in [Practical Deep Learning for Coders](https://course.fast.ai) by [Jeremy Howard](solve.it.com) — 28 lessons across Parts 1 & 2.
+Structured close reading (or rather, close watching) transcripts of _almost_ every lesson in [Practical Deep Learning for Coders](https://course.fast.ai) by [Jeremy Howard](solve.it.com) — 28 lessons across Parts 1 & 2.
 
 The [Data Ethics Bonus Lesson 8a](https://course.fast.ai/Lessons/lesson8a.html) is not included. Try add it yourself!
 
@@ -14,7 +14,7 @@ This repo is primarily designed for in-context study on [SolveIt](https://solve.
 
 ## What Is This?
 
-This repository contains transcripts structured as Jupyter Notebooks for every lesson of fast.ai's *Practical Deep Learning for Coders*. Each lesson is broken down into segments with:
+This repository contains transcripts structured as Jupyter Notebooks for _almost_ every lesson of fast.ai's *Practical Deep Learning for Coders*. Each lesson is broken down into segments with:
 
 - **The narrative** of what Jeremy and gang says and shows
 - **Video frame references** via `fetch_frame()` calls capturing slides, diagrams, and demonstrations
