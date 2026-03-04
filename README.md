@@ -95,8 +95,8 @@ Each lesson's full CRAFT chain (root + part + lesson) consumes approximately:
 If context becomes unwieldy during a long session:
 
 - **Trim surrounding summaries:** Deep into Lesson 5? You probably don't need the full Lesson 5 summary. Ask the LLM to trim the lesson 5 summary relevant to where you are in the transcript.
-- **Hide sections**: SolveIt supports collapsible headings and hiding sections. Hide sections from context you've already covered.
-- **Start fresh dialogs** — for different segments of the same lesson, create separate dialogs. CRAFT context reloads cleanly each time.
+- **Hide sections:** SolveIt supports collapsible headings and hiding sections. Hide sections from context you've already covered.
+- **Start fresh dialogs:** For different segments of the same lesson, create separate dialogs. CRAFT context reloads cleanly each time.
 
 ## Video Frame Capture
 
