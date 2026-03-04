@@ -1,0 +1,107 @@
+Part One of *Practical Deep Learning for Coders* spans nine lessons (including an optional Lesson Zero) and takes a deliberate, top-down approach: you train a state-of-the-art model in the very first session, then spend the remaining lessons peeling back the layers to understand why it works. The pedagogy draws explicitly on Paul Lockhart and David Perkins — show the whole game first, then build skills — and the recurring message is almost comically blunt: finish the course, finish a project, be tenacious, stop endlessly preparing.
+
+Lesson Zero sets the tone by confronting the habits that derail most learners. Jeremy presents YouTube analytics showing steep drop-off curves and urges you to schedule specific days for watching and for assignments. The story of Christine McLeavey — a fast.ai alumna who built a deep-learning music composition system that the BBC eventually performed — illustrates the power of polishing one great project rather than accumulating half-finished ones. Radek Osmulski, a non-degree-holding former corporate worker who failed repeatedly before winning a Kaggle competition, embodies the tenacity theme. The four-step study method is laid out: watch the lecture, run the notebook and experiment, reproduce results from scratch, then repeat with a different dataset. Practical tooling advice follows — notebook servers, the "clean" notebook versions for active recall, git, SSH, blogging — all in service of the principle that building and sharing a portfolio is how you get a job in this field.
+
+Lesson 1 demolishes the idea that deep learning requires vast resources. An xkcd comic from 2015 joked that bird recognition would require a research team and five years; Jeremy downloads 200 bird photos and 200 forest photos, trains a classifier on a laptop while streaming video, and achieves near-perfect accuracy in under 30 seconds. The lesson surveys what deep learning can do — DALL·E 2 generating art from text prompts, PaLM answering questions with chain-of-thought reasoning — then introduces the core abstractions: DataBlock, DataLoaders, Learner, and fine-tuning a pre-trained ResNet. Image classification, segmentation, tabular prediction, and collaborative filtering are all demonstrated in the same pattern: load data, create a learner, train, inspect. The Zeiler and Fergus visualizations show what CNNs learn layer by layer — edges, corners, textures, object parts — without any hand-engineering. Arthur Samuel's training loop (inputs + weights → predictions → loss → update weights → repeat) is presented as the conceptual skeleton of all machine learning.
+
+Lesson 2 pivots to deployment. The central insight is counterintuitive: train a model *before* cleaning your data, because the model's mistakes reveal your data's problems more efficiently than manual inspection. Resizing strategies are compared — squish, crop, pad, and the preferred RandomResizedCrop — and data augmentation via `aug_transforms` is introduced. The confusion matrix and `plot_top_losses` surface the images where the model is most wrong, feeding directly into `ImageClassifierCleaner`. Deployment uses HuggingFace Spaces with Gradio: a minimal three-line app goes live within a minute. The trained model is exported as a pickle file (the only step requiring a GPU), and a JavaScript front-end calling the Spaces API demonstrates that a single model can power multiple interfaces.
+
+Lesson 3 digs into the mathematical foundations. Starting with a quadratic function and Jupyter's `@interact` sliders, Jeremy demonstrates fitting a curve by hand, then automates it with gradient descent — PyTorch's `requires_grad_()`, `.backward()`, and a learning-rate-scaled parameter update. The Rectified Linear Unit (ReLU) is the key insight: a single ReLU is just a line clipped at zero, but summing enough ReLUs with different slopes and offsets can approximate any function to arbitrary precision. This is genuinely the entirety of deep learning's representational power. The lesson culminates in building a complete model in an Excel spreadsheet on the Titanic dataset — linear regression via SUMPRODUCT, a neural network via ReLU applied to a hidden layer, and matrix multiplication via MMULT — demonstrating that the critical operation in all of deep learning is multiplying things together and adding them up.
+
+Lesson 4 introduces Natural Language Processing using HuggingFace Transformers rather than fastai, deliberately stepping to a lower-level API so the same concepts are seen from a different angle. The story of ULMFiT — the transfer-learning recipe Jeremy co-authored — explains the three-stage pipeline: pre-train a language model, fine-tune on domain text, then fine-tune for classification. Tokenization is covered in detail (sub-word units, not full words). A substantial portion addresses overfitting, underfitting, and validation: polynomial fits show what underfitting and overfitting look like visually, and the lesson stresses that a good validation set is not a random split — for time series you hold out the most recent dates, for people-based tasks you hold out entire people. Metrics are distinguished from loss functions (accuracy has zero gradient almost everywhere; Pearson correlation is explored visually at different levels). The practical project is the U.S. Patent Phrase Matching Kaggle competition, where `deberta-v3-small` reaches r ≈ 0.834 after about 20 minutes of training. The lesson closes with a serious discussion of NLP's misuse potential — GPT-generated fake comments, bot-written op-eds — and the argument that broad understanding is the best defense.
+
+Lesson 5 builds a complete model from scratch in Python and PyTorch on the Titanic dataset. Missing values are imputed with the mode, skewed fare data is log-transformed, and categorical columns become dummy variables. Broadcasting — the APL-derived mechanism that lets a vector multiply across all rows of a matrix in one operation — is introduced. A linear model is trained with gradient descent, sigmoid is applied for binary targets, and the result is submitted to Kaggle at the 50th percentile. A single-hidden-layer neural network and then a deep (multi-layer) network are built by simply adding more weight matrices and ReLUs. The lesson then shows why you'd use a framework in practice: fastai's `TabularPandas` handles all preprocessing, `lr_find()` automates learning rate selection, and ensembling five models with different random seeds pushes the submission from the 50th to the top 25th percentile. The final act introduces random forests from first principles — a binary split divides passengers into groups with different survival rates, scored by weighted standard deviation.
+
+Lesson 6 extends binary splits into full decision trees and then into random forests. Gini impurity is explained as the split-quality metric. The theoretical foundation of bagging is laid out: averaging many trees built on random subsets produces uncorrelated, unbiased predictions whose errors cancel. Feature importance — summing Gini improvements per column across all trees — is demonstrated, and Jeremy recounts using it to identify 30 useful columns from 7,000 in a credit-scoring dataset. Out-of-bag error, partial dependence plots, and gradient boosting are all covered. The second half shifts to the Paddy Disease Classification Kaggle competition, demonstrating an iterative workflow: start with the fastest model, submit immediately, iterate. Test Time Augmentation (TTA) averages predictions over multiple augmented versions of each test image. The lesson embodies the principle that modeling should be fast and hypothesis-driven, not an exhaustive grid search.
+
+Lesson 7 tackles GPU memory constraints head-on with gradient accumulation — processing smaller batches but accumulating gradients before updating, which is mathematically equivalent to the original large batch but fits in less memory. An ensemble of large models (ConvNeXt, ViT, Swin, SwinV2) with TTA reaches the top of the Kaggle leaderboard. Multi-target models — predicting both disease and rice variety from one image — lead into a thorough explanation of cross-entropy loss (softmax converts raw outputs to probabilities; cross-entropy penalizes low probability on the correct class). Collaborative filtering is then introduced through the MovieLens dataset: users and movies each get a vector of latent factors, ratings are predicted by dot product, and gradient descent optimizes the factors. An embedding is revealed to be nothing more than an array lookup — computationally equivalent to multiplying by a one-hot vector. Bias terms capture per-user and per-movie tendencies, and weight decay (L2 regularization) is introduced to combat overfitting.
+
+Lesson 8, the Part One finale, rebuilds embeddings from scratch using `nn.Parameter`, then interprets the trained collaborative filtering model: sorting movie biases reveals universally loved and disliked films, and PCA on the latent factors produces a two-dimensional map where one axis separates blockbusters from critically acclaimed films and the other separates action from drama — all discovered by SGD with no genre labels. Tabular deep learning is demonstrated on the bulldozer auction dataset using entity embeddings for categorical variables, and the Guo and Berkhahn paper is cited: their trained region embeddings reproduced Germany's geography without location data. Convolutions are explained in an Excel spreadsheet — a 3×3 kernel slides across an image computing dot products, and edge-detecting kernels emerge as learned features. Stride-2 convolutions replace max pooling for spatial reduction, and fast.ai's concat pooling combines max and average pooling. Dropout — randomly zeroing activations during training — is presented as data augmentation for the network's internals, forcing robust feature learning. The lesson closes with an extended AMA covering motivation, the myth that bigger models are always necessary, and Jeremy's productivity philosophy: spend half your time learning, don't overwork, get good sleep, and finish things properly.
+
+---
+
+**Lesson Challenges**
+
+- Train a cat-vs-dog classifier; try three or four custom categories (Lesson 1)
+- Build and deploy your own image classifier on HuggingFace Spaces with Gradio (Lesson 2)
+- Create a JavaScript front-end calling your model's API (Lesson 2)
+- Reproduce the quadratic-fitting and ReLU demonstrations (Lesson 3)
+- Recreate the Titanic neural network in a spreadsheet or from scratch in Python (Lesson 3)
+- Improve the Pearson correlation on the Patent Phrase Matching competition (Lesson 4)
+- Build a linear model, neural net, and deep learning model from scratch on Titanic (Lesson 5)
+- Build a Random Forest from scratch and implement feature importance (Lesson 6)
+- Enter the Paddy Disease Classification Kaggle competition and iterate (Lesson 6)
+- Experiment with gradient accumulation, multi-target models, and cross-entropy (Lesson 7)
+- Rebuild the embedding module from scratch using `nn.Parameter` (Lesson 8)
+- Trace the convolution and dropout Excel spreadsheets (Lesson 8)
+
+**Potential Research Directions**
+
+- Transfer learning effectiveness with very small datasets (<50 items)
+- Converting non-image data (sound, time series, mouse movements) into images for classification
+- How validation set design affects model reliability across domains
+- ULMFiT vs. Transformer approaches for long-document classification
+- Robust detection methods for AI-generated text at scale
+- The OneR paper and when the simplest model is competitive
+- Broadcasting semantics and their origin in APL / Ken Iverson's notation
+- Leo Breiman's "Statistical Modeling: The Two Cultures"
+- Partial dependence plots for deep learning models
+- Multi-target learning's effect on single-target accuracy
+- Entity embeddings of categorical variables in non-deep-learning models (Guo & Berkhahn)
+- The cold-start / bootstrapping problem in recommendation systems
+- Convolution as constrained matrix multiplication and its implications for architecture design
+
+**Homework**
+
+- Set up a GPU environment (Colab, Kaggle, Paperspace Gradient) and run the Chapter 1 notebook (Lesson 0)
+- Reproduce Chapter 1 results from scratch in a blank notebook (Lesson 0)
+- Read Chapters 1, 2, 4, 8, 9, 10, and 13 of the [fastbook](https://github.com/fastai/fastbook)
+- Read [*Python for Data Analysis*](https://wesmckinney.com/book/) by Wes McKinney
+- Work through the Kaggle notebooks: [Is it a bird?](https://www.kaggle.com/code/jhoward/is-it-a-bird-creating-a-model-from-your-own-data), [How does a neural net really work?](https://www.kaggle.com/code/jhoward/how-does-a-neural-net-really-work), [NLP for absolute beginners](https://www.kaggle.com/code/jhoward/getting-started-with-nlp-for-absolute-beginners), [Linear model and neural net from scratch](https://www.kaggle.com/code/jhoward/linear-model-and-neural-net-from-scratch), [How random forests really work](https://www.kaggle.com/code/jhoward/how-random-forests-really-work/), [Road to the Top Parts 1–4](https://www.kaggle.com/code/jhoward/first-steps-road-to-the-top-part-1), [Collaborative filtering deep dive](https://www.kaggle.com/code/jhoward/collaborative-filtering-deep-dive/notebook)
+- Submit to Kaggle competitions: [Titanic](https://www.kaggle.com/competitions/titanic), [U.S. Patent Phrase Matching](https://www.kaggle.com/competitions/us-patent-phrase-to-phrase-matching), [Paddy Disease Classification](https://www.kaggle.com/competitions/paddy-disease-classification)
+- Experiment with the Excel spreadsheets: [softmax/cross-entropy](https://github.com/fastai/course22/blob/master/xl/entropy_example.xlsx), [collaborative filtering](https://github.com/fastai/course22/blob/master/xl/collab_filter.xlsx), [convolutions](https://github.com/fastai/course22/blob/master/xl/conv-example.xlsx)
+- Start a blog and share your work on the [fast.ai forums](https://forums.fast.ai/t/share-your-work-here/96015)
+
+**Things Jeremy Says You Should Do**
+
+- Finish the damn course — schedule it, tell someone, commit
+- Finish a project — one polished project beats ten half-finished ones
+- Be tenacious — keep going after setbacks, even if resuming takes a year
+- Stop endlessly preparing — train a model in Week One
+- Use the clean notebooks and chapter questionnaires for active recall
+- Start with a simple baseline for every project
+- Always train a model before cleaning your data
+- Use RandomResizedCrop and aug_transforms for training beyond ~5 epochs
+- Watch each lecture through once, then rewatch while running the notebook
+- Join or create a study group
+- Always use a validation set; think carefully about how to construct it
+- Always look at your data and your model's outputs — visualize everything
+- Never throw away data — impute, don't drop
+- For binary targets, always apply sigmoid as the final activation
+- Start every tabular project with a Random Forest
+- Submit to Kaggle every day, no matter how rough
+- Iterate rapidly — train models in ~1 minute so you can try 80 things
+- Use gradient accumulation instead of buying bigger GPUs
+- Write code and share it — blog, tweet, post to forums
+- Spend significant time learning new tools and skills
+- Don't overwork — get good sleep, eat well, exercise
+- Read papers, starting with results and skipping derivations
+- Build a portfolio: blog posts, GitHub, forum contributions, Kaggle entries
+
+**Resources**
+
+- [Practical Deep Learning for Coders — Course Homepage](https://course.fast.ai)
+- [fast.ai Forums](https://forums.fast.ai)
+- [fastbook GitHub Repo (free book as notebooks)](https://github.com/fastai/fastbook)
+- [Deep Learning for Coders with fastai and PyTorch (Amazon)](https://www.amazon.com/Deep-Learning-Coders-fastai-PyTorch/dp/1492045527)
+- [Course notebooks repo](https://github.com/fastai/course22)
+- [Lesson 0 video](https://youtu.be/gGxe2mN3kAg) · [Lesson 1](https://course.fast.ai/Lessons/lesson1.html) · [Lesson 2](https://course.fast.ai/Lessons/lesson2.html) · [Lesson 3](https://course.fast.ai/Lessons/lesson3.html) · [Lesson 4](https://course.fast.ai/Lessons/lesson4.html) · [Lesson 5](https://course.fast.ai/Lessons/lesson5.html) · [Lesson 6](https://course.fast.ai/Lessons/lesson6.html) · [Lesson 7](https://course.fast.ai/Lessons/lesson7.html) · [Lesson 8](https://course.fast.ai/Lessons/lesson8.html)
+- **Kaggle Notebooks:** [Is it a bird?](https://www.kaggle.com/code/jhoward/is-it-a-bird-creating-a-model-from-your-own-data) · [Jupyter 101](https://www.kaggle.com/code/jhoward/jupyter-notebook-101) · [How does a neural net really work?](https://www.kaggle.com/code/jhoward/how-does-a-neural-net-really-work) · [NLP for absolute beginners](https://www.kaggle.com/code/jhoward/getting-started-with-nlp-for-absolute-beginners) · [Linear model & neural net from scratch](https://www.kaggle.com/code/jhoward/linear-model-and-neural-net-from-scratch) · [Why you should use a framework](https://www.kaggle.com/code/jhoward/why-you-should-use-a-framework) · [How random forests really work](https://www.kaggle.com/code/jhoward/how-random-forests-really-work/) · [Road to the Top Part 1](https://www.kaggle.com/code/jhoward/first-steps-road-to-the-top-part-1) · [Part 2](https://www.kaggle.com/code/jhoward/small-models-road-to-the-top-part-2) · [Part 3](https://www.kaggle.com/code/jhoward/scaling-up-road-to-the-top-part-3) · [Part 4](https://www.kaggle.com/code/jhoward/multi-target-road-to-the-top-part-4) · [Best vision models for fine-tuning](https://www.kaggle.com/code/jhoward/the-best-vision-models-for-fine-tuning) · [Collaborative filtering deep dive](https://www.kaggle.com/code/jhoward/collaborative-filtering-deep-dive/notebook)
+- **Spreadsheets:** [Softmax/cross-entropy](https://github.com/fastai/course22/blob/master/xl/entropy_example.xlsx) · [Collaborative filtering](https://github.com/fastai/course22/blob/master/xl/collab_filter.xlsx) · [Convolutions](https://github.com/fastai/course22/blob/master/xl/conv-example.xlsx)
+- **Kaggle Competitions:** [Titanic](https://www.kaggle.com/competitions/titanic) · [U.S. Patent Phrase Matching](https://www.kaggle.com/competitions/us-patent-phrase-to-phrase-matching) · [Paddy Disease Classification](https://www.kaggle.com/competitions/paddy-disease-classification)
+- **Key Papers:** [ULMFiT (Howard & Ruder, 2018)](https://arxiv.org/abs/1801.06146) · [Zeiler & Fergus (2013)](https://arxiv.org/abs/1311.1901) · [DeBERTa (He et al., 2020)](https://arxiv.org/abs/2006.03654) · [Entity Embeddings (Guo & Berkhahn, 2016)](https://arxiv.org/abs/1604.06737) · [Dropout (Srivastava et al., 2014)](https://jmlr.org/papers/v15/srivastava14a.html) · [Mish activation (Misra)](https://arxiv.org/abs/1908.08681) · [fastai paper](https://arxiv.org/abs/2002.04688) · [OneR (Holte, 1993)](https://link.springer.com/article/10.1023/A:1022631118932) · [Statistical Modeling: The Two Cultures (Breiman)](https://www.semanticscholar.org/paper/Statistical-modeling%3A-The-two-cultures-Breiman/e5df6bc6da5653ad98e754b08f63326c2e52b372)
+- **Blog Posts:** [How to create a good validation set](https://www.fast.ai/2017/11/13/validation-sets/) · [The Problem with Metrics](https://www.fast.ai/2019/09/24/metrics/) · [fast.ai teaching philosophy](https://www.fast.ai/2016/10/08/teaching-philosophy/)
+- **Books:** *Meta Learning* by Radek Osmulski · *Python for Data Analysis* by Wes McKinney · *The Book of Why* by Judea Pearl · *A Mathematician's Lament* by Paul Lockhart · *Making Learning Whole* by David Perkins · *The Lean Startup* by Eric Ries
+- **Libraries & Tools:** [PyTorch](https://pytorch.org) · [fastai](https://docs.fast.ai) · [timm](https://timm.fast.ai) · [HuggingFace Transformers](https://huggingface.co/docs/transformers/index) · [Gradio](https://gradio.app) · [scikit-learn](https://scikit-learn.org/) · [nbdev](https://nbdev.fast.ai/) · [fastkaggle](https://github.com/fastai/fastkaggle)
+- **Platforms:** [Kaggle Notebooks](https://www.kaggle.com/docs/notebooks) · [Paperspace Gradient](https://gradient.run/notebooks) · [Google Colab](https://colab.research.google.com) · [HuggingFace Spaces](https://huggingface.co/spaces)
+- **Other:** [The Missing Semester (MIT)](https://missing.csail.mit.edu) · [ethics.fast.ai](https://ethics.fast.ai) · [aiquizzes.com](https://aiquizzes.com) · [Matrix multiplication visualization](https://matrixmultiplication.xyz) · [Gradient Boosting explained (explain.ai)](https://explained.ai/gradient-boosting/) · [CNNs from different viewpoints (Kleinsmith)](https://medium.com/impactai/cnns-from-different-viewpoints-fab7f52d159c)
