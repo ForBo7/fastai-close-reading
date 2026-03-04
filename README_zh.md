@@ -2,11 +2,11 @@
 
 ![fastai-close-reading](thumbnail.png)
 
-对 Jeremy Howard 主讲的 **《Practical Deep Learning for Coders》**（https://course.fast.ai）全部课程进行**结构化精读**（更准确地说是「精看」）的文字稿整理——涵盖 Part 1 & Part 2 共 **28 节课**。
+对 Jeremy Howard 主讲的 **《Practical Deep Learning for Coders》**(https://course.fast.ai)全部课程进行**结构化精读**（更准确地说是「精看」）的文字稿整理——涵盖 Part 1 & Part 2 共 **28 节课**。
 
-**数据伦理 bonus 课 8a**（https://course.fast.ai/Lessons/lesson8a.html）暂未包含。欢迎你自行补充！
+**数据伦理 bonus 课 8a**(https://course.fast.ai/Lessons/lesson8a.html)暂未包含。欢迎你自行补充！
 
-本仓库主要为在 **SolveIt**（https://solve.it.com）上进行上下文学习而设计，但也可配合其他工具使用。
+本仓库主要为在 **SolveIt**(https://solve.it.com)上进行上下文学习而设计，但也可配合其他工具使用。
 
 [English README →](README.md)
 
@@ -48,7 +48,7 @@
 
 ### 什么是 CRAFT 文件？
 
-在 **SolveIt**（https://solve.it.com）中，**CRAFT.ipynb** 为每个文件夹提供专属的 LLM 上下文。
+在 **SolveIt**(https://solve.it.com)中，**CRAFT.ipynb** 为每个文件夹提供专属的 LLM 上下文。
 当你在某个课程文件夹内打开对话时，SolveIt 会自动加载该文件夹及所有父文件夹的 CRAFT 文件，形成**层级上下文**：
 
 | 层级 | 内容 |
