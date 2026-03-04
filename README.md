@@ -10,6 +10,28 @@ This repo is primarily designed for in-context study on [SolveIt](https://solve.
 
 [中文 README →](README_zh.md)
 
+## Table of Contents
+
+- [What Is This?](#what-is-this)
+- [Repository Structure](#repository-structure)
+  - [What Are CRAFT Files?](#what-are-craft-files)
+  - [The `summaries/` Folder](#the-summaries-folder)
+- [How to Use This](#how-to-use-this)
+  - [On SolveIt (Recommended)](#on-solveit-recommended)
+  - [Outside SolveIt](#outside-solveit)
+- [Context Length Considerations](#context-length-considerations)
+- [Video Frame Capture](#video-frame-capture)
+  - [Prerequisites (on your local machine)](#prerequisites-on-your-local-machine)
+  - [Setup](#setup)
+  - [Running Locally (without SolveIt)](#running-locally-without-solveit)
+- [Known Issues & Exercises](#known-issues--exercises)
+  - [1. KaTeX Rendering in Markdown Files](#1-katex-rendering-in-markdown-files)
+  - [2. Heading Granularity](#2-heading-granularity)
+  - [3. Missing Data Ethics Lesson](#3-missing-data-ethics-lesson)
+  - [4. Section Granularity](#4-section-granularity)
+- [Links](#links)
+- [Acknowledgments](#acknowledgments)
+
 ---
 
 ## What Is This?
@@ -67,8 +89,9 @@ Standalone markdown exports of each lesson's narrative summary. I have tailored 
 
 1. Clone this repo into your SolveIt instance
 2. Navigate to a lesson folder (e.g., `part1/lesson3/`)
-3a. Converse with the lesson's video
-3b. or, create a new dialog for your own explorations – CRAFT context loads automatically
+3. Then,
+  - converse with the lesson's video
+  - or, create a new dialog for your own explorations – CRAFT context loads automatically
 
 The LLM will have the full lesson breakdown, surrounding context, and resources available so you can ask questions, explore implications, identify patterns across lessons, and go as deep as you want into any segment.
 
@@ -80,7 +103,7 @@ The LLM will have the full lesson breakdown, surrounding context, and resources 
 
 Even without SolveIt, the content is accessible:
 
-- Upload `summaries/lesson3.md` before a lesson to prime yourself, or after a lesson to clarify concerns and doubts
+- Upload `summaries/lesson3.md` to a LLM before a lesson to prime yourself, or after a lesson to clarify concerns and doubts
 - Open the CRAFT files (standard `.ipynb` notebooks) in editors (e.g., VS Code with the Copilot extension), so when you're programming, the LLM has full context
 
 ## Context Length Considerations
@@ -97,12 +120,15 @@ If context becomes unwieldy during a long session:
 - **Trim surrounding summaries:** Deep into Lesson 5? You probably don't need the full Lesson 5 summary. Ask the LLM to trim the lesson 5 summary relevant to where you are in the transcript.
 - **Hide sections:** SolveIt supports collapsible headings and hiding sections. Hide sections from context you've already covered.
 - **Start fresh dialogs:** For different segments of the same lesson, create separate dialogs. CRAFT context reloads cleanly each time.
+- **Summarize further:** Ask SolveIt or your LLM to make the summaries more concise.
+
+I don't know what the right level of detail for such summaries should be, so I'm still open ears!
 
 ## Video Frame Capture
 
-The lesson CRAFT files contain `fetch_frame()` calls that capture screenshots from the lesson videos at specific timestamps. **All frames have already been captured and are stored in the notebooks** — you do not need to run these calls yourself.
+The lesson CRAFT files contain `fetch_frame()` calls that capture screenshots from the lesson videos at specific timestamps. **All frames have already been captured and are stored in the notebooks**, so you do not necessarily need to run these calls yourself.
 
-However, if you want to capture frames at different timestamps, or re-run the frame captures yourself, you'll need to set up an SSH tunnel from SolveIt to your local machine. The `fetch_frame()` and `fetch_frames()` functions work by SSHing into your machine to run `yt-dlp` and `ffmpeg`.
+However, if you want to capture frames at different timestamps, or re-run the frame captures yourself, you'll need to set up an SSH tunnel from SolveIt to your local machine. The `fetch_frame()` function work by SSHing into your machine to run `yt-dlp` and `ffmpeg`.
 
 ### Prerequisites (on your local machine)
 
@@ -149,25 +175,43 @@ ssh -o StrictHostKeyChecking=no YOUR_USERNAME@bore.pub -p YOUR_PORT "echo Connec
 
 For a more detailed walkthrough, see [Tunneling from SolveIt to your Machine](https://forbo7.github.io/forblog/posts/33_tunneling_from_solveit_to_your_machine.html).
 
+#### `fetch_frame` and `fetch_frames` source
+
+```py
+import base64, re
+from io import BytesIO
+from PIL import Image
+
+def fetch_frame(
+    id:str,        # Video ID
+    port:int,      # SSH Port
+    timestamp:int, # Timestamp in seconds
+    src:str='yt'   # 'yt' or 'wistia'
+) -> Image.Image: # PIL Image of the frame
+    """Grab a frame from a video via SSH."""
+    cmd = f'''url=$({_ytdlp_cmd(id, src)}) ffmpeg -ss {timestamp} -i "$url" -vframes 1 -f image2pipe -vcodec mjpeg - 2>/dev/null | base64'''
+    result = mac(cmd, port=port)
+    img_bytes = base64.b64decode(result.stdout)
+    return Image.open(BytesIO(img_bytes))
+
+def mac(
+    cmd:str, # The shell command
+    port:int, # The SSH port
+    user:str='', # The SSH username
+    host:str='bore.pub', # The SSH server
+    args:str='', # Additional SSH args
+    timeout:int=30 # Timeout in seconds
+) -> subprocess.CompletedProcess : # The shell command response
+    '''Run shell commands on the user's local machine.'''
+    full_cmd = f"echo '{cmd}' | ssh {args} -o StrictHostKeyChecking=no -A -p {port} {user}@{host} '$SHELL -ls'"
+    return subprocess.run(full_cmd, shell=True, capture_output=True, text=True, timeout=timeout)
+```
+
+This `mac` implementation is based on Jeremy's implementation in Lesson 7 of the [SolveIt course](solve.it.com).
+
 ### Running Locally (without SolveIt)
 
-If you're running the notebooks on your local machine, the SSH tunnel is unnecessary — `yt-dlp` and `ffmpeg` are already local. However, the `fetch_frame()` functions are written to execute commands over SSH. You have two options:
-
-1. **Don't run them** — all frames are already captured and stored in the notebooks.
-2. **Replace with local execution** — swap the `mac()` calls for direct `subprocess.run()` calls:
-
-```python
-import subprocess, base64
-from PIL import Image
-from io import BytesIO
-
-def fetch_frame_local(id, timestamp, src='yt'):
-    url_cmd = f'yt-dlp -f "best[height<=720]" -g "https://youtu.be/{id}" | head -1'
-    url = subprocess.run(url_cmd, shell=True, capture_output=True, text=True).stdout.strip()
-    cmd = f'ffmpeg -ss {timestamp} -i "{url}" -vframes 1 -f image2pipe -vcodec mjpeg - 2>/dev/null'
-    result = subprocess.run(cmd, shell=True, capture_output=True)
-    return Image.open(BytesIO(result.stdout))
-```
+If you're running the notebooks on your local machine, the SSH tunnel is unnecessary. `yt-dlp` and `ffmpeg` are already local. However, since `fetch_frame()` is written to execute commands over SSH, you could swap the `mac()` calls for direct `subprocess.run()` calls.
 
 ## Known Issues & Exercises
 
