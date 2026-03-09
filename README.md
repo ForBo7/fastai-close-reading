@@ -81,7 +81,7 @@ Open a dialog inside `part1/lesson3/` and you automatically get the course overv
 
 Standalone markdown exports of each lesson's narrative summary. I have tailored the summaries to be more helpful for the LLM, than you as the reader.
 
-## How to Use This
+## Suggested Usecases
 
 ### On SolveIt (Recommended)
 
@@ -98,6 +98,8 @@ The LLM will have the full lesson breakdown, surrounding context, and resources 
 **Tip: Exercise Notebooks.**  Try ask SolveIt to take the the official course exercise notebooks and replace the solution code with comments describing what you need to implement at each stage, as a way to have a guided from-scratch experience without answers.
 
 **Tip: Study in Your Language.** You can translate the dialogs/notebooks into your own language and converse with the material in your native language for better understanding.
+
+Alternatively, try use a multi-staged telescope (thanks to Kenny(深度碎片) on Discord for this idea!) to use the course as a queryable database. Ask the LLM to use `all.md` to determine which part of the course is relevant to your query. Then ask the LLM to crawl through the relevant lesson, `lessonN.md`, to get your answer from the summary alone. Then if the summary is not enough, ask the LLM to crawl the lesson CRAFT to get your answer. Or, use `add_prompt` from a separate dialog to directly query a lesson's CRAFT without loading the entire file in.
 
 ### Outside SolveIt
 
